@@ -50,12 +50,34 @@ python -m streamlit run dashboard.py
 ```
 
 3. 在浏览器中打开应用（通常会自动打开）
-4. 上传包含SYD、ADL和BNE工作表的Excel文件
-   - 一个文件对应一周的数据
-   - 多周数据需要上传多个文件
+4. 选择数据源：
+   - 上传本地Excel文件
+   - 或从Supabase云存储获取数据
 5. 使用侧边栏选择城市
 6. 使用选项卡切换日维度和周维度视图
 7. 根据需要调整日期范围或周数
+
+## 配置Supabase云存储
+
+为了使用Supabase云存储功能，您需要配置凭证。有两种方式：
+
+### 1. 使用环境变量
+
+1. 复制`.env.example`为`.env`
+2. 编辑文件并填入您的Supabase凭证
+3. 或直接在系统中设置以下环境变量：
+   - `SUPABASE_URL`
+   - `SUPABASE_KEY`
+   - `SUPABASE_BUCKET`
+
+### 2. 使用Streamlit密钥
+
+如果您在Streamlit Cloud上部署，可以使用其密钥管理功能：
+
+1. 在Streamlit应用设置中添加以下密钥：
+   - `SUPABASE_URL`
+   - `SUPABASE_KEY`
+   - `SUPABASE_BUCKET`
 
 ## 数据文件要求
 

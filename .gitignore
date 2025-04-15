@@ -1,2 +1,16 @@
 data/*
 output/*
+# 密钥和配置文件
+.env
+config.json
+.secrets.toml
+.streamlit/secrets.toml
+# Python相关
+__pycache__/
+*.py[cod]
+# Excel临时文件
+~$*.xlsx
+# 其他
+.DS_Store
+
+test.ipynb

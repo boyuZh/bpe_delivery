@@ -1,8 +1,8 @@
 @echo off
-echo Installing dependencies...
+setlocal
+
+@REM echo 安装依赖中...
 @REM pip install -r requirements.txt
 
-echo Starting dashboard application...
+echo.
 python -m streamlit run dashboard.py
-
-pause
