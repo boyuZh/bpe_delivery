@@ -1,9 +1,6 @@
 import os
-import json
-import pandas as pd
-import requests
-from pathlib import Path
 from dotenv import load_dotenv
+import streamlit as st
 
 # 尝试加载.env文件中的环境变量
 load_dotenv(override=True)
@@ -23,7 +20,6 @@ def get_supabase_config():
     # 如果环境变量不存在，尝试从Streamlit Secrets获取
     if (not url or not key) and 'st' in globals():
         try:
-            import streamlit as st
             if "supabase" in st.secrets:
                 url = url or st.secrets["supabase"]["url"]
                 key = key or st.secrets["supabase"]["key"]

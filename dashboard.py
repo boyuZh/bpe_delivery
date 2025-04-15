@@ -3,12 +3,9 @@ import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
 import os
-import numpy as np
 from datetime import datetime
 import re
 import os
-import requests
-import hashlib
 # 导入我们的工具函数
 from utils import list_supabase_files, download_supabase_file
 
@@ -22,10 +19,10 @@ def check_password(password):
     """检查密码是否正确"""
     
     # 尝试从st.secrets获取密码哈希
-    if "password" in st.secrets:
-        return password == st.secrets["password"]
+    if "login" in st.secrets:
+        return password == st.secrets["login"]["password"]
     
-    return True
+    return False
 
 # 验证会话功能
 def verify_password():
@@ -919,8 +916,6 @@ def main():
                             st.error("未能成功下载任何文件")
         except Exception as e:
             st.error(f"访问云存储时出错: {str(e)}")
-            st.info("请确保已正确设置Supabase凭证。您可以通过创建config.json文件或设置环境变量来配置。")
-            st.info("查看config.json.example获取示例配置。")
     
     # 创建看板（如果有数据）
     if all_data:
