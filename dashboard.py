@@ -65,12 +65,24 @@ def extract_account_info(account_str):
 
 # 使用Streamlit的缓存功能加速数据处理
 @st.cache_data(ttl=3600, show_spinner=False)
-def process_data(_uploaded_files):
-    """处理上传的Excel文件或本地文件对象，并缓存结果"""
+def process_data(_uploaded_files, data_source_type=None):
+    """处理上传的Excel文件或本地文件对象，并缓存结果
+    
+    Args:
+        _uploaded_files: 上传的文件列表
+        data_source_type: 数据源类型('local'或'cloud')，用于区分不同来源的数据以避免缓存冲突
+    """
     all_data = {}
     
     if not _uploaded_files:
         return all_data
+    
+    # 记录数据加载的时间戳，用于显示缓存信息
+    all_data['_meta'] = {
+        'data_source_type': data_source_type,
+        'timestamp': datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+        'files_count': len(_uploaded_files)
+    }
             
     for uploaded_file in _uploaded_files:
         # 处理从Supabase下载的文件
@@ -749,6 +761,25 @@ def create_dashboard(data):
         fig8 = generate_pie_chart(supplier_counts, '数量', '商家', "商家比例")
         st.plotly_chart(fig8, use_container_width=True)
 
+# 辅助函数：显示缓存状态信息
+def show_cache_info(data):
+    """显示数据缓存的相关信息"""
+    if '_meta' in data:
+        meta = data['_meta']
+        source_type = meta.get('data_source_type', '未知')
+        timestamp = meta.get('timestamp', '未知')
+        files_count = meta.get('files_count', 0)
+        
+        source_label = "本地上传" if source_type == 'local' else "云端数据" if source_type == 'cloud' else source_type
+        
+        with st.sidebar.expander("📊 数据信息", expanded=False):
+            st.info(f"""
+            **数据来源**: {source_label}  
+            **文件数量**: {files_count}  
+            **最后加载时间**: {timestamp}  
+            """)
+            st.caption("如果需要刷新数据，请点击上方的"清除缓存数据"按钮")
+
 # 主应用
 def main():
     # 验证密码
@@ -767,6 +798,14 @@ def main():
         ["上传Excel文件", "使用Supabase云存储数据"]
     )
     
+    # 添加清除缓存按钮
+    st.sidebar.markdown("---")
+    if st.sidebar.button("🔄 清除缓存数据"):
+        # 清除所有缓存数据
+        st.cache_data.clear()
+        st.success("✅ 缓存已清除！请重新加载数据。")
+        st.experimental_rerun()
+    
     # 根据选择的数据源处理数据
     all_data = {}
     if data_source == "上传Excel文件":
@@ -775,7 +814,7 @@ def main():
         
         if uploaded_files:
             with st.spinner("正在处理数据..."):
-                all_data = process_data(_uploaded_files=uploaded_files)
+                all_data = process_data(_uploaded_files=uploaded_files, data_source_type='local')
         else:
             st.info("请上传Excel文件...")
     else:
@@ -911,7 +950,7 @@ def main():
                         st.success(f"已处理 {stats['total']} 个文件: {stats['downloaded']} 个下载, {stats['cached']} 个使用缓存, {stats['failed']} 个失败")
                         
                         if file_objects:
-                            all_data = process_data(_uploaded_files=file_objects)
+                            all_data = process_data(_uploaded_files=file_objects, data_source_type='cloud')
                         else:
                             st.error("未能成功下载任何文件")
         except Exception as e:
@@ -919,6 +958,9 @@ def main():
     
     # 创建看板（如果有数据）
     if all_data:
+        # 显示缓存信息
+        show_cache_info(all_data)
+        
         create_dashboard(all_data)
     else:
         # 展示说明信息

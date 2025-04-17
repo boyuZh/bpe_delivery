@@ -1,4 +1,3 @@
-data/*
 output/*
 # 密钥和配置文件
 .env
