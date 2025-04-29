@@ -778,8 +778,8 @@ def show_cache_info(data):
             **文件数量**: {files_count}  
             **最后加载时间**: {timestamp}  
             """)
-            st.caption("如果需要刷新数据，请点击上方的"清除缓存数据"按钮")
-
+            st.caption("如果需要刷新数据，请点击上方的'清除缓存数据'按钮")
+    
 # 主应用
 def main():
     # 验证密码
