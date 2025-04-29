@@ -169,7 +169,7 @@ def process_data(_uploaded_files, data_source_type=None):
     for city in cities:
         try:
             df = all_data[city]
-            if not df.empty:
+            if isinstance(df, pd.DataFrame) and not df.empty:  # 修改这里，确保df是DataFrame且不为空
                 # 找到关键列
                 try:
                     signed_time_key = [col for col in df.columns if "签收时间" in col][0]
